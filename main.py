@@ -317,16 +317,19 @@ def train(epoch):
                 # Y1 are the label, Y1[-1] is the background bounding box (negative bounding box), ambigous (neutral boxes are eliminated < min overlap thresold)
                 # Y2 is concat of 1 , tx, ty, tw, th and 0, tx, ty, tw, th 
                 X2, Y1, Y2, _ = calc_iou(rpn_rois, img_data, class_mapping=config.label_map )
-                
-                X2 = X2.to(device=device)
-                Y1 = Y1.to(device=device)
-                Y2 = Y2.to(device=device)
 
                 # If X2 is None means there are no matching bboxes
                 if X2 is None:
                     rpn_accuracy_rpn_monitor.append(0)
                     rpn_accuracy_for_epoch.append(0)
                     continue
+                else:
+                    X2 = X2.to(device=device)
+
+                Y1 = Y1.to(device=device)
+                Y2 = Y2.to(device=device)
+
+
                 neg_samples = torch.where(Y1[:, -1] == 1)[0]
                 pos_samples = torch.where(Y1[:, -1] == 0)[0]
                 rpn_accuracy_rpn_monitor.append(pos_samples.size(0))
